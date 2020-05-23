@@ -1,0 +1,7 @@
+.idea/
+.out/
+.lib/
+.settings/
+.classpath
+.project
+C.G_Ray-Tracing.iml
