@@ -175,6 +175,12 @@ public class Scene {
 	private Vec calcColor(Ray ray, int recusionLevel) {
 		// TODO: Implement this method.
 		// This is the recursive method in RayTracing.
+
+
+
+
+
+
 		throw new UnimplementedMethodException("calcColor");
 	}
 }

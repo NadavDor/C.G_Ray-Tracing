@@ -6,6 +6,15 @@ import edu.cg.algebra.Vec;
 
 public class PinholeCamera {
 	// TODO Add your fields
+	Point cameraPosition;
+	Vec towardsVec;
+	Vec upVec;
+	Vec vecRight;
+
+	double distanceToPlain;
+	int height;
+	int width;
+	double viewAngle;
 
 	/**
 	 * Initializes a pinhole camera model with default resolution 200X200 (RxXRy)
@@ -20,7 +29,10 @@ public class PinholeCamera {
 	 * 
 	 */
 	public PinholeCamera(Point cameraPosition, Vec towardsVec, Vec upVec, double distanceToPlain) {
-		// TODO: Initialize your fields
+		this.cameraPosition = cameraPosition;
+		this.towardsVec = towardsVec;
+		this.upVec = upVec;
+		this.distanceToPlain = distanceToPlain;
 	}
 
 	/**
@@ -31,7 +43,9 @@ public class PinholeCamera {
 	 * @param viewAngle - the view Angle.
 	 */
 	public void initResolution(int height, int width, double viewAngle) {
-		// TODO: init your fields
+		this.height = height;
+		this.width = width;
+		this.viewAngle = viewAngle;
 	}
 
 	/**
@@ -44,6 +58,7 @@ public class PinholeCamera {
 	 */
 	public Point transform(int x, int y) {
 		// TODO: implement this method.
+
 		throw new UnimplementedMethodException("PinholeCamera.transform is not implemented.");
 	}
 
