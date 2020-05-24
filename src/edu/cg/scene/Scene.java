@@ -11,9 +11,7 @@ import java.util.concurrent.Future;
 
 import edu.cg.Logger;
 import edu.cg.UnimplementedMethodException;
-import edu.cg.algebra.Point;
-import edu.cg.algebra.Ray;
-import edu.cg.algebra.Vec;
+import edu.cg.algebra.*;
 import edu.cg.scene.camera.PinholeCamera;
 import edu.cg.scene.lightSources.Light;
 import edu.cg.scene.objects.Surface;
@@ -176,11 +174,66 @@ public class Scene {
 		// TODO: Implement this method.
 		// This is the recursive method in RayTracing.
 
+		// find the closest intersection
+		Hit minHit = null;
+		for(Surface surf : surfaces){
+			Hit hit = surf.intersect(ray);
+			if(hit != null){
+				hit.setSurface(surf);
+				minHit = minHit == null || hit.compareTo(minHit) < 0 ? hit : minHit;
+			}
+		}
+		if(minHit == null){
+			return backgroundColor;
+		}
 
+		Surface hittingSurface = minHit.getSurface();
+		Point hittingPoint = ray.getHittingPoint(minHit);
 
+		Vec color = hittingSurface.Ka().mult(ambient);
+		for(Light light : lightSources){
+			Ray rayToLight = light.rayToLight(hittingPoint);
+			if(!isLightReachingPoint(rayToLight, light)) continue;
 
+			Vec diffuse = calcDiffuse(minHit, rayToLight, hittingSurface.Kd());
+			Vec specular = calcSpecular(minHit, rayToLight, hittingSurface.Ks(), ray.direction(), hittingSurface);
+			Vec li = light.intensity(hittingPoint, rayToLight);
 
+			color = color.add( (diffuse.add(specular)).mult(li) );
+		}
 
-		throw new UnimplementedMethodException("calcColor");
+		// recursion stopping condition
+		recusionLevel++;
+		if (recusionLevel > maxRecursionLevel) return color;
+
+		// add reflections
+
+		// add refractions
+
+		return color;
 	}
+
+
+	private boolean isLightReachingPoint(Ray rayToLight, Light light) {
+		for(Surface surface : surfaces){
+			if (light.isOccludedBy(surface, rayToLight)) return false;
+		}
+		return true;
+	}
+
+	private Vec calcDiffuse(Hit minHit, Ray rayToLight, Vec kd){
+		Vec N = minHit.getNormalToSurface();
+		Vec L = rayToLight.direction().normalize();
+		return kd.mult(N.dot(L));
+	}
+
+	private Vec calcSpecular(Hit minHit, Ray rayToLight, Vec ks, Vec V, Surface hittingSurface) {
+		Vec R = Ops.reflect(rayToLight.direction(), minHit.getNormalToSurface());
+		int n = hittingSurface.shininess();
+		double val = V.dot(R);
+
+		if (val > 0) return ks.mult(Math.pow(val, n));
+		else return new Vec();
+	}
+
 }
