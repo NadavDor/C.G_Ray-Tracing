@@ -171,7 +171,6 @@ public class Scene {
 	}
 
 	private Vec calcColor(Ray ray, int recusionLevel) {
-		// TODO: Implement this method.
 		// This is the recursive method in RayTracing.
 
 		// find the closest intersection
@@ -186,12 +185,9 @@ public class Scene {
 			return backgroundColor;
 		}
 
-		if(minHit != null){
-			System.out.println(minHit);
-		}
-
 		Surface hittingSurface = minHit.getSurface();
 		Point hittingPoint = ray.getHittingPoint(minHit);
+		Vec norm = minHit.getNormalToSurface();
 
 		Vec color = hittingSurface.Ka().mult(ambient);
 		for(Light light : lightSources){
@@ -207,11 +203,27 @@ public class Scene {
 
 		// recursion stopping condition
 		recusionLevel++;
-		if (recusionLevel > maxRecursionLevel) return color;
+		if (recusionLevel >= maxRecursionLevel) return color;
 
 		// add reflections
+		if(this.renderReflections && hittingSurface.reflectionIntensity() > 0) {
+			Vec rV = ray.direction().add(norm.mult(-2).mult(ray.direction().dot(norm)));
+			Ray rRay = new Ray(hittingPoint, rV);
+			//recursive call
+			Vec rColor = calcColor(rRay, recusionLevel);
+			color = color.add(rColor.mult(hittingSurface.reflectionIntensity()));
+		}
 
 		// add refractions
+		if(this.renderReflections && hittingSurface.isTransparent()){
+			double n1 = hittingSurface.n1(minHit);
+			double n2 = hittingSurface.n2(minHit);
+			Vec rV = Ops.refract(ray.direction(), norm, n1, n2);
+			Ray rRay = new Ray(hittingPoint, rV);
+			//recursive call
+			Vec rColor = calcColor(rRay, recusionLevel);
+			color = color.add(rColor.mult(hittingSurface.refractionIntensity()));
+		}
 
 		return color;
 	}

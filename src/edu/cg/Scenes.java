@@ -138,5 +138,57 @@ public class Scenes {
 		
 		return finalScene;
 	}
+
+	public static Scene scene5() {
+		// Define basic properties of the scene
+		Scene finalScene = new Scene().initAmbient(new Vec(1.0))
+				.initCamera(/* Camera Position = */new Point(2.0, 2.0, 6.0),
+						/* Towards Vector = */ new Vec(-0.3, -0.1 ,-1.0),
+						/* Up vector = */new Vec(0.0, 1.0, 0.0),
+						/*Distance to plain =*/ 2.0)
+				.initName("scene5").initAntiAliasingFactor(1)
+				.initRenderRefarctions(true).initRenderReflections(true).initMaxRecursionLevel(6);
+		// Add Surfaces to the scene.
+		// (1) A plain that represents the ground floor.
+		Shape plainShape = new Plain(new Vec(0.0,1.0,0.0), new Point(0.0, -1.0, 0.0));
+		Material plainMat = Material.getMetalMaterial();
+		Surface plainSurface = new Surface(plainShape, plainMat);
+		finalScene.addSurface(plainSurface);
+
+		// (2) we add a vertical plain
+		Shape plainShape1 = new Plain(new Vec(1.0,0.0,0.0), new Point(-1.0, 0.0, 0.0));
+		Material plainMat1 = Material.getMetalMaterial();
+		Surface plainSurface1 = new Surface(plainShape1, plainMat1);
+		finalScene.addSurface(plainSurface1);
+
+		// (3) We will also add spheres in both sides.
+		double move = 1;
+		for (int ball = 0; ball < 4; ball++) {
+			Shape sphereShape = new Sphere(new Point(2.0, ball, 1*move), 0.8);
+			Material sphereMat = Material.getRandomMaterial();
+			Surface sphereSurface = new Surface(sphereShape, sphereMat);
+			finalScene.addSurface(sphereSurface);
+
+			move *= -1;
+		}
+
+		// Add light sources:
+		CutoffSpotlight cutoffSpotlight = new CutoffSpotlight(new Vec(0.0, -1.0, 0.0), 45.0);
+		cutoffSpotlight.initPosition(new Point(4.0, 4.0, -3.0));
+		cutoffSpotlight.initIntensity(new Vec(1.0,0.6,0.6));
+		finalScene.addLightSource(cutoffSpotlight);
+		cutoffSpotlight = new CutoffSpotlight(new Vec(0.0, -1.0, 0.0), 30.0);
+		cutoffSpotlight.initPosition(new Point(-4.0, 4.0, -3.0));
+		cutoffSpotlight.initIntensity(new Vec(0.6,1.0,0.6));
+		finalScene.addLightSource(cutoffSpotlight);
+		cutoffSpotlight = new CutoffSpotlight(new Vec(0.0, -1.0, 0.0), 30.0);
+		cutoffSpotlight.initPosition(new Point(0.0, 4.0, 0.0));
+		cutoffSpotlight.initIntensity(new Vec(0.6,0.6,1.0));
+		finalScene.addLightSource(cutoffSpotlight);
+		DirectionalLight directionalLight=new DirectionalLight(new Vec(0.5,-0.5,0.0),new Vec(0.2));
+		finalScene.addLightSource(directionalLight);
+
+		return finalScene;
+	}
 	
 }
