@@ -1,10 +1,7 @@
 package edu.cg.scene.objects;
 
 import edu.cg.UnimplementedMethodException;
-import edu.cg.algebra.Hit;
-import edu.cg.algebra.Point;
-import edu.cg.algebra.Ray;
-import edu.cg.algebra.Vec;
+import edu.cg.algebra.*;
 
 public class Sphere extends Shape {
 	private Point center;
@@ -41,12 +38,12 @@ public class Sphere extends Shape {
 	public Hit intersect(Ray ray) {
 		Vec V = ray.direction().normalize();
 		Point P0 = ray.source();
-		// a = Vx^2 + Vy^2 +Vz^2
-		double a = V.dot(V);
-		// b = 2Vx(P0x - Qx) + 2Vy(p0y - Qy) + 2Vx(P0z - Qz))
-		double b = (V.mult(2)).dot(P0.sub(this.center));
-		//c =
 		Vec tempVector = P0.sub(this.center);
+		// a = Vx^2 + Vy^2 +Vz^2
+		double a = 1;
+		// b = 2Vx(P0x - Qx) + 2Vy(p0y - Qy) + 2Vx(P0z - Qz))
+		double b = (V.mult(2)).dot(tempVector);
+		//c =
 		double c = tempVector.dot(tempVector) - this.radius * this.radius;
 
 		//Find quadratic Equation Roots
@@ -58,14 +55,15 @@ public class Sphere extends Shape {
 			firstRoot = (-b + sqrt) / (2 * a);
 			secondRoot = (-b - sqrt) / (2 * a);
 			root = Math.min(firstRoot, secondRoot);
-			if(root<0) return null;
-		}else{
+		} else {
 			return null;
 		}
-		Point intersection = P0.add(V.mult(root));
-		Vec centerToIntersection = this.center.sub(intersection);
-		Vec normalToIntersection = centerToIntersection.normalize();
-		return new Hit(root,normalToIntersection);
+		if (root > Ops.epsilon && root < Ops.infinity) {
+			Vec normal = ray.add(root).sub(center).normalize();
+			return new Hit(root, normal);
+		}
+
+		return null;
 	}
 
 }
