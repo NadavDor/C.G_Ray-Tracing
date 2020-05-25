@@ -39,13 +39,13 @@ public class Sphere extends Shape {
 
 	@Override
 	public Hit intersect(Ray ray) {
-		Vec V = ray.direction();
+		Vec V = ray.direction().normalize();
 		Point P0 = ray.source();
 		// a = Vx^2 + Vy^2 +Vz^2
 		double a = V.dot(V);
 		// b = 2Vx(P0x - Qx) + 2Vy(p0y - Qy) + 2Vx(P0z - Qz))
 		double b = (V.mult(2)).dot(P0.sub(this.center));
-		//c = (
+		//c =
 		Vec tempVector = P0.sub(this.center);
 		double c = tempVector.dot(tempVector) - this.radius * this.radius;
 
@@ -55,18 +55,15 @@ public class Sphere extends Shape {
 		double determinant = (b * b) - (4 * a * c);
 		double sqrt = Math.sqrt(determinant);
 		if (determinant >= 0) {
-			if (determinant > 0) {
-				firstRoot = (-b + sqrt) / (2 * a);
-				secondRoot = (-b - sqrt) / (2 * a);
-				root = Math.min(firstRoot, secondRoot);
-			} else {
-				root = ((-b + sqrt) / (2 * a));
-			}
+			firstRoot = (-b + sqrt) / (2 * a);
+			secondRoot = (-b - sqrt) / (2 * a);
+			root = Math.min(firstRoot, secondRoot);
+			if(root<0) return null;
 		}else{
 			return null;
 		}
 		Point intersection = P0.add(V.mult(root));
-		Vec centerToIntersection = new Vec(intersection.x - this.center.x, intersection.y - this.center.y, intersection.z - this.center.z);
+		Vec centerToIntersection = this.center.sub(intersection);
 		Vec normalToIntersection = centerToIntersection.normalize();
 		return new Hit(root,normalToIntersection);
 	}
