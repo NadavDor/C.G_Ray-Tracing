@@ -5,3 +5,7 @@
 .classpath
 .project
 C.G_Ray-Tracing.iml
+.*.class
+
+/out/production/C.G_Ray-Tracing/edu/cg/
+/scenes/scene1.json

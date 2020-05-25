@@ -179,12 +179,15 @@ public class Scene {
 		for(Surface surf : surfaces){
 			Hit hit = surf.intersect(ray);
 			if(hit != null){
-				hit.setSurface(surf);
 				minHit = minHit == null || hit.compareTo(minHit) < 0 ? hit : minHit;
 			}
 		}
 		if(minHit == null){
 			return backgroundColor;
+		}
+
+		if(minHit != null){
+			System.out.println(minHit);
 		}
 
 		Surface hittingSurface = minHit.getSurface();

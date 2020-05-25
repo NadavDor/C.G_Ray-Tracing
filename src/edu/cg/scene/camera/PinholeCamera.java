@@ -2,6 +2,7 @@ package edu.cg.scene.camera;
 
 import edu.cg.UnimplementedMethodException;
 import edu.cg.algebra.Point;
+import edu.cg.algebra.Ray;
 import edu.cg.algebra.Vec;
 
 public class PinholeCamera {
@@ -38,7 +39,7 @@ public class PinholeCamera {
 		this.upVec = upVec;
 		this.distanceToPlain = distanceToPlain;
 
-        this.centerPosition = cameraPosition.add(distanceToPlain, towardsVec);
+        this.centerPosition = new Ray(cameraPosition, towardsVec).add(distanceToPlain);
         this.vecRight = towardsVec.cross(upVec).normalize();
         this.vecUp = vecRight.cross(towardsVec).normalize();
 
@@ -56,7 +57,7 @@ public class PinholeCamera {
 		this.width = width;
 		this.viewAngle = viewAngle;
 
-        this.plainW = Math.tan(viewAngle / 2) * distanceToPlain * 2;
+        this.plainW = Math.tan(Math.toRadians(viewAngle / 2)) * distanceToPlain * 2;
         this.ratio = plainW / width;
 	}
 
@@ -69,11 +70,10 @@ public class PinholeCamera {
 	 * @return the middle point of the pixel (x,y) in the model coordinates.
 	 */
 	public Point transform(int x, int y) {
-        Vec uv = vecUp.mult(y - height/2);
-        Vec rv = vecRight.mult(x - width/2);
+        Vec uv = vecUp.mult(ratio * (y - height/2) );
+        Vec rv = vecRight.mult(ratio * (x - width/2) );
 
         return centerPosition.add(rv.add(uv.neg()));
-		//throw new UnimplementedMethodException("PinholeCamera.transform is not implemented.");
 	}
 
 	/**
